@@ -1,6 +1,6 @@
 # Node Redis Cache
 
-## The following was implemeneted:
+## The following was implemented:
   - Cache Misses
   - Cache Hit
 
