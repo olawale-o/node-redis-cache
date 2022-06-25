@@ -2,10 +2,11 @@ const mysqlConn = require('../database/connection');
 const RedisClient = require('../database/redis_connection');
 const User = require('../database/models/User');
 
-async function getAllUsers() {
-  const users = RedisClient.SMEMBERS('users:').then((ids) => {
+async function getAllUsers(conn, obj = {}) {
+  const { key = '', group = '' } = obj;
+  const users = conn.SMEMBERS(group).then((ids) => {
     const persons = ids.map(async (id) => {
-      return RedisClient.hGetAll('user:'+id).then((user) => {
+      return RedisClient.hGetAll(key+id).then((user) => {
         return new User(user);
       });
     });
@@ -22,7 +23,7 @@ module.exports = {
       const t1 = new Date().getTime();
 
       if (cacheUsers.length)  {
-          const users = await getAllUsers();
+          const users = await getAllUsers(RedisClient, { group: 'users:', key: 'user:' });
         return res.status(200).json({ message: "Successfull", users, responseTime: `${t1 - t0} ms`, source: 'redis' });
       } else {
           const t0 = new Date().getTime();
