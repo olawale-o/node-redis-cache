@@ -5,9 +5,9 @@ const User = require('../database/models/User');
 async function getAllUsers() {
   const users = RedisClient.SMEMBERS('users:').then((ids) => {
     const persons = ids.map(async (id) => {
-        return RedisClient.hGetAll('user:'+id).then((user) => {
-        return user;
-        });
+      return RedisClient.hGetAll('user:'+id).then((user) => {
+        return new User(user);
+      });
     });
     return Promise.all(persons);
   });
@@ -18,7 +18,7 @@ module.exports = {
   getUsers:  async(req, res, next) => {
     try {
       const t0 = new Date().getTime();
-      const cacheUsers = await RedisClient.sMembers("users:");
+      const cacheUsers = await RedisClient.SMEMBERS("users:");
       const t1 = new Date().getTime();
 
       if (cacheUsers.length)  {
@@ -28,8 +28,10 @@ module.exports = {
           const t0 = new Date().getTime();
           const users = await mysqlConn('users').select().table('users');
           await users.forEach(async (user) => {
-            await RedisClient.hSet(`user:${user.id}`, user);
+            await RedisClient.HSET(`user:${user.id}`, user);
+            await RedisClient.EXPIRE(`user:${user.id}`, 3600);
             await RedisClient.SADD('users:', user.id.toString());
+            await RedisClient.EXPIRE('users:', 3600);
           });
           const t2 = new Date().getTime();
           res.status(200).json({ message: "Successfull", users, responseTime: `${t2 - t0}ms`, source: 'mysql' });
@@ -39,4 +41,3 @@ module.exports = {
     }
   },
 };
-
