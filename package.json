@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test"
+    "test": "npm run test",
+    "server": "nodemon server.js",
+    "migrate:dev": "npx knex migrate:latest --knexfile database/knexfile.js --env development"
   },
   "author": "",
   "license": "ISC",
