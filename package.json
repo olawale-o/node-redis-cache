@@ -23,6 +23,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.3.0",
     "debug": "^4.3.4",
     "dotenv": "^16.0.1",
     "morgan": "^1.10.0",
