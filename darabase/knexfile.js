@@ -8,7 +8,7 @@ module.exports = {
   development: {
     client: 'mysql2',
     connection: {
-      database: 'node-redis-cache-dev',
+      database: 'node_redis_cache_dev',
       user: 'root',
       password: '',
     },
